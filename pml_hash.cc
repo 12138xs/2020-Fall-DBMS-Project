@@ -56,6 +56,51 @@ PMLHash::PMLHash(const char* file_path) {
     //         return;
     //     }
     //     start_addr = mmap(0, FILE_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fp, 0);
+<<<<<<< HEAD
+    size_t mapped_len;
+    int is_pmem;
+    if((start_addr = pmem_map_file(file_path, FILE_SIZE, PMEM_FILE_CREATE,
+		0666, &mapped_len, &is_pmem)) == NULL){
+		exit(0);
+	}
+    //initialize data for new file 
+    // start_addr = (void*)malloc(FILE_SIZE);
+    if(start_addr == NULL){
+        printf("get pointer error\n");
+        return ;
+    }
+    else{
+        printf("ojbk\n");
+    }
+    overflow_addr = (void *)((uint64_t)start_addr + (uint64_t)FILE_SIZE/2); 
+    meta = (metadata*)((uint64_t)start_addr);
+    meta->size = 2;
+    meta->level = 1;
+    meta->next = 0;
+    meta->overflow_num = 0;
+    table_arr = (pm_table*)( (uint64_t)meta + sizeof(metadata) );
+    for(int i = 0; i < HASH_SIZE; i++){
+        table_arr[i].fill_num = 0;
+        table_arr[i].next_offset = -1;
+        
+        for(int j = 0; j < TABLE_SIZE; j++){
+            table_arr[i].kv_arr[j].key = -1; 
+            table_arr[i].kv_arr[j].value = -1; 
+        }
+    }
+    overflow_table_num = (FILE_SIZE/2)/(sizeof(pm_table));
+    // printf("%ld\n",overflow_table_num/8);
+    is_used = (bool*)((uint64_t)overflow_addr - (uint64_t)overflow_table_num*sizeof(bool));
+    uint64_t unsuit = (uint64_t)is_used - ((uint64_t)start_addr + sizeof(metadata) + 16*sizeof(pm_table));
+    // printf("%ld", unsuit);
+    if(unsuit < 0){
+        printf("no enough memory for is_used list, HASH_SIZE should be smaller\n");
+    }
+
+    for(int i = 0; i < overflow_table_num; i++){
+        is_used[i] = 0;
+    }
+=======
     
          start_addr = (void*)malloc(FILE_SIZE);
     //initialize data for new file 
@@ -94,6 +139,7 @@ PMLHash::PMLHash(const char* file_path) {
         for(int i = 0; i < overflow_table_num; i++){
             is_used[i] = 0;
         }
+>>>>>>> 8791214136424c4d9287fdadcb3ec266b7a16d7e
 
     // }
 
@@ -104,10 +150,15 @@ PMLHash::PMLHash(const char* file_path) {
  * unmap and close the data file
  */
 PMLHash::~PMLHash() {
+<<<<<<< HEAD
+    pmem_persist(start_addr,FILE_SIZE);
+    pmem_unmap(start_addr, FILE_SIZE);
+=======
     
     free(start_addr);
     start_addr = NULL;
     // pmem_unmap(start_addr, FILE_SIZE);
+>>>>>>> 8791214136424c4d9287fdadcb3ec266b7a16d7e
 }
 /**
  * PMLHash 
@@ -173,8 +224,12 @@ void PMLHash::split() {
     if(meta->next == temp ){
         meta->next = 0;
     }
+<<<<<<< HEAD
+    pmem_persist(start_addr,FILE_SIZE);
+=======
 
    return ;
+>>>>>>> 8791214136424c4d9287fdadcb3ec266b7a16d7e
 }
 /**
  * PMLHash 
@@ -260,7 +315,10 @@ int PMLHash::insert(const uint64_t &key, const uint64_t &value) {
                 printf("no enough overflow table for insert\n");
                 return -1;
             }
+<<<<<<< HEAD
+=======
             
+>>>>>>> 8791214136424c4d9287fdadcb3ec266b7a16d7e
         }
     }
     for(int i = 0; i < TABLE_SIZE; i++){
@@ -275,6 +333,10 @@ int PMLHash::insert(const uint64_t &key, const uint64_t &value) {
     if(split_flag == 1){
         split();
     }
+<<<<<<< HEAD
+    // pmem_persist(start_addr,FILE_SIZE);
+=======
+>>>>>>> 8791214136424c4d9287fdadcb3ec266b7a16d7e
     // pmem_persist();
     return 0;
 }
@@ -322,6 +384,57 @@ int PMLHash::search(const uint64_t &key, uint64_t &value) {
  */
 int PMLHash::remove(const uint64_t &key) {
     uint64_t h_key = hashFunc(key, meta->size);
+<<<<<<< HEAD
+
+    pm_table* table = (pm_table*)((uint64_t)start_addr + sizeof(metadata) + h_key * sizeof(pm_table) );
+    pm_table* last = table;
+    while(table->next_offset != -1){
+        for(int i = 0; i < TABLE_SIZE; i++){
+            if(table->kv_arr[i].key != -1 && table->kv_arr[i].key == key){
+                table->kv_arr[i].key = -1;
+                table->kv_arr[i].value = -1;
+                table->fill_num --;
+                //remove the empty table
+                if(table->fill_num == 0){
+                    last->next_offset = table->next_offset;
+                    meta->overflow_num--;
+                    if((uint64_t)table >= (uint64_t)overflow_addr){
+                        int temp = ((uint64_t)table - (uint64_t)overflow_addr)/sizeof(pm_table);
+                        is_used[temp] = 0;
+                    }
+                }
+                // pmem_persist();
+                // pmem_persist(start_addr,FILE_SIZE);
+                return 0;
+            }
+        }
+        last = table;
+        table = (pm_table*)((uint64_t)start_addr + table->next_offset);
+        
+           
+    }
+    for(int i = 0; i < TABLE_SIZE; i++){
+        if(table->kv_arr[i].key == key){
+            table->kv_arr[i].key = -1;
+            table->kv_arr[i].value = -1;
+            table->fill_num --;
+            if(table->fill_num == 0){
+                last->next_offset = table->next_offset;
+                if((uint64_t)table >= (uint64_t)overflow_addr){
+                    uint64_t temp = ((uint64_t)table - (uint64_t)overflow_addr)/sizeof(pm_table);
+                    is_used[temp] = 0;
+                }
+            }
+            // pmem_persist();
+            // pmem_persist(start_addr,FILE_SIZE);
+            return 0;
+        }
+    }
+    printf("couldn't find the key, failed to remove\n");
+    // pmem_persist(start_addr,FILE_SIZE);
+    return -1;
+
+=======
 
     pm_table* table = (pm_table*)((uint64_t)start_addr + sizeof(metadata) + h_key * sizeof(pm_table) );
     pm_table* last = table;
@@ -368,6 +481,7 @@ int PMLHash::remove(const uint64_t &key) {
     printf("couldn't find the key, failed to remove\n");
     return -1;
 
+>>>>>>> 8791214136424c4d9287fdadcb3ec266b7a16d7e
     // pmem_persist();
 }
 
@@ -390,6 +504,10 @@ int PMLHash::update(const uint64_t &key, const uint64_t &value) {
             if(table->kv_arr[i].key!=-1 && table->kv_arr[i].key == key){
                 table->kv_arr[i].value = value;
                 // pmem_persist();
+<<<<<<< HEAD
+                // pmem_persist(start_addr,FILE_SIZE);
+=======
+>>>>>>> 8791214136424c4d9287fdadcb3ec266b7a16d7e
                 return 0;
             }
         }
@@ -402,6 +520,8 @@ int PMLHash::update(const uint64_t &key, const uint64_t &value) {
             return -1;
         }
     }
+<<<<<<< HEAD
+=======
 
     for(int i = 0; i < table->fill_num; i++){
         if(table->kv_arr[i].key == key){
@@ -410,5 +530,16 @@ int PMLHash::update(const uint64_t &key, const uint64_t &value) {
             return 0;
         }
     }
+>>>>>>> 8791214136424c4d9287fdadcb3ec266b7a16d7e
 
+    for(int i = 0; i < table->fill_num; i++){
+        if(table->kv_arr[i].key == key){
+            table->kv_arr[i].value = value;
+            // pmem_persist();
+            // pmem_persist(start_addr,FILE_SIZE);
+            return 0;
+        }
+    }
+    // pmem_persist(start_addr,FILE_SIZE);
+    return -1;
 }
