@@ -1,20 +1,9 @@
 #include "pml_hash.h"
 #include <iostream>
 #include <time.h>
-
-
-
-#define FILE_PATH "pml_hash_file"
-
-
 using namespace std;
 
-// #define TABLE_SIZE 16 // adjustable
-// #define HASH_SIZE  16 // adjustable
-// #define FILE_SIZE 1024 * 1024 * 16 // 16 MB adjustable
-
-
-
+#define FILE_PATH "/mnt/pmemdir/pml_hash_file"
 
 int main() {
     char LOAD_RUN_PATH[][100] = {"benchmark/10w-rw-0-100-load.txt",
@@ -54,31 +43,14 @@ int main() {
             key = (uint64_t)atoi(temp);
             if(!strcmp(a, "INSERT")){
                 ret = hash.insert(key, key);
-<<<<<<< HEAD
-=======
-                // if(ret == 0){
-                //     printf("insert %ld successful\n",key);
-                // }
->>>>>>> 8791214136424c4d9287fdadcb3ec266b7a16d7e
             }
             else if(!strcmp(a, "READ")){
                 uint64_t val;
                 ret = hash.search(key, val);
-<<<<<<< HEAD
-=======
-                // if(ret == 0){
-                //     printf("\n");
-                // }
-                // printf("read key:%ld val:%ld\n",key,val);
->>>>>>> 8791214136424c4d9287fdadcb3ec266b7a16d7e
             }
         }
         end = clock();
         printf("opreation num:%ld time:%f\n",cnt, double(end - start)/CLOCKS_PER_SEC);
-<<<<<<< HEAD
-=======
-        // hash.display_table();
->>>>>>> 8791214136424c4d9287fdadcb3ec266b7a16d7e
         fclose(fp);
     }
     

@@ -2,11 +2,11 @@
 #include <stdint.h>
 #include <iostream>
 #include <unistd.h>
-#include<sys/types.h>
-#include<sys/stat.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/mman.h>
-#include<fcntl.h> 
-#include<string.h>
+#include <fcntl.h> 
+#include <string.h>
 #include <memory.h>
 #include <stdlib.h>
 #include <vector>
@@ -16,13 +16,9 @@
 #define HASH_SIZE  16 // adjustable
 #define FILE_SIZE 1024 * 1024 * 16 // 16 MB adjustable
 
-
-
 #define overflow_offset 1024 * 1024 * 8 
 
 using namespace std;
-
-
 
 typedef struct metadata {
     size_t size;            // the size of whole hash table array 
@@ -54,7 +50,7 @@ private:
 
     void split();
     uint64_t hashFunc(const uint64_t &key, const size_t &hash_size);
-    pm_table* newOverflowTable(uint64_t &offset);       //find an available overflow table
+    pm_table* newOverflowTable(uint64_t &offset);       // find an available overflow table
 
 public:
     PMLHash() = delete;
@@ -66,5 +62,5 @@ public:
     int remove(const uint64_t &key);
     int update(const uint64_t &key, const uint64_t &value);
 
-    void display_table();       //dispaly the whole table, for test
+    void display_table();       // dispaly the whole table, for test
 };
