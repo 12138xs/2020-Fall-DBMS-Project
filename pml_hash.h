@@ -15,7 +15,7 @@
 
 #define TABLE_INIT 4  // adjustable
 #define TABLE_SIZE 32 // adjustable
-#define HASH_SIZE  1024 // adjustable
+#define HASH_SIZE  128 // adjustable
 #define FILE_SIZE 1024 * 1024 * 16  // 16 MB adjustable
 #define BITSET_SIZE 1024 * 8        // 8 KB adjustable
 
