@@ -99,7 +99,7 @@ make check
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`make check`执行过程中会出现输出很多PASS，如果出现错误，请检查依赖软件是否安装成功，是否版本正确。
 ![pic2.1](image/pmdk_make%20check.jpg)
 
-4. 编译源代码(以 root 身份进行)
+1. 编译源代码(以 root 身份进行)
 ```bash
 make
  ```
