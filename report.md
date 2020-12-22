@@ -48,6 +48,7 @@ name|student_id|Github_nickname|e-mail|
 ```
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;运行```dmesg | grep user```检测配置结果，结果如下图所示。
+
 ![pic1.2](image/NVM_img2.jpg)
 
 3. 建立直接访问的文件系统，使用以下三个命令。
@@ -59,6 +60,7 @@ name|student_id|Github_nickname|e-mail|
 ```
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;配置过程截图如下所示。
+
 ![pic1.3](image/NVM_img3.jpg)
 ![pic1.4](image/NVM_img4.png)
 
