@@ -1,4 +1,4 @@
-// #include <libpmem.h>
+#include <libpmem.h>
 #include <stdint.h>
 #include <iostream>
 #include <unistd.h>
@@ -11,12 +11,13 @@
 #include <stdlib.h>
 #include <vector>
 #include <bitset>
+#include <math.h>
 
+#define TABLE_INIT 4  // adjustable
 #define TABLE_SIZE 16 // adjustable
 #define HASH_SIZE  16 // adjustable
-#define FILE_SIZE 1024 * 1024 * 16 // 16 MB adjustable
-
-#define overflow_offset 1024 * 1024 * 8 
+#define FILE_SIZE 1024 * 1024 * 16  // 16 MB adjustable
+#define BITSET_SIZE 1024 * 8        // 8 KB adjustable
 
 using namespace std;
 
